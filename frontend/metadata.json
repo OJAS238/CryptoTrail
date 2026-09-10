@@ -1,0 +1,7 @@
+{
+  "name": "CryptoTrail",
+  "description": "Deterministic path tracer for tracking cryptocurrency wallet transfers across liquidity pools, mixers, and multi-hop peel chains to receiving exchanges.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

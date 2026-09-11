@@ -1,44 +1,156 @@
-# Automated VASP Wallet Attribution
+# CryptoTrail — Merge Conflictors
 
-An Ethereum-only investigative-lead prototype that traces outgoing transfers, matches known VASP addresses, ranks candidates, and presents an evidence-based visual result.
+## 1. Project Information
 
-## Scope
+- **PS ID:** SIH26182 (numeric ID: 26182)
+- **PS Title:** Automated Attribution of Unknown Cryptocurrency Wallets to Nearest Virtual Asset Service Providers (VASPs) through Blockchain Intelligence APIs
+- **Project:** CryptoTrail
+- **Team:** Merge Conflictors
+- **Category:** Software
+- **Theme:** Blockchain & Cybersecurity
 
-This hackathon prototype uses Etherscan transaction history, a local JSON VASP-label dataset, four-hop bounded tracing, transparent heuristic confidence scoring, and an optional LLM summary. Results are investigative leads only, not legal proof.
+## 2. Problem Statement
 
-## Local development
+Investigators may encounter cryptocurrency wallets whose associated exchange or virtual asset service provider is unknown. Following transfers manually across intermediary wallets is time-consuming. A tool is needed to identify possible paths to known VASP addresses and present the supporting evidence clearly.
 
-1. Copy `.env.example` to `.env` and add an Etherscan API key.
-2. Run `npm install`.
-3. Import the supplied VASP dataset: `npm run import-dataset -- C:\\path\\to\\accounts.json`.
-4. Run `npm run dev`.
-5. Open `http://localhost:5173`.
+## 3. Proposed Solution
 
-If no Etherscan key is configured, the API returns an actionable configuration error. The dataset importer selects only its explicit centralized-exchange allowlist; it deliberately excludes labels such as `bybit-exploit` and `wazirx-exploit`, which are not evidence of VASP ownership. The default JSON store is created at `backend/data/vasp-store.json` when the backend runs.
+CryptoTrail traces outgoing Ethereum transfers, compares destination addresses with a local VASP-label dataset, and ranks candidate matches using path length, estimated value share and match type. An optional Groq explanation translates the trace into a short plain-English summary. Results are investigative leads, not proof of wallet ownership or wrongdoing.
 
-## Backend reliability notes
+## 4. Key Features
 
-Trace cache entries expire after 15 minutes and are invalidated when VASP labels are seeded or replaced. Legacy cache entries without timestamps are ignored. Store updates use a temporary file and rename; run only one backend process against a store to avoid concurrent writers losing updates.
+- Bounded tracing through up to four transfer hops.
+- Exact address matching against an imported VASP-label dataset.
+- Transparent heuristic confidence scoring.
+- Fund-flow visualization, node details and JSON export.
+- Optional AI-generated explanation, with a rule-based fallback.
+- Illustrative two-hop demo for reproducible demonstration without Etherscan.
 
-Downstream candidate amounts use a proportional allocation bounded by the incoming path amount. This is a heuristic, not proof that the same funds moved. Only transfers strictly later than the incoming transfer are followed; same-second transfers are excluded because transaction ordering is unavailable. Each wallet is expanded once, so converging paths can be undercounted. Scores are heuristic rankings, not probabilities. Etherscan requests time out after 15 seconds.
+## 5. Technology Stack
 
-## Final demo
+React, TypeScript, Vite and Tailwind CSS frontend; Node.js, Express and TypeScript backend; Etherscan transaction API; local JSON storage; Groq Chat Completions API; Vitest tests. Dependencies are defined in package.json and package-lock.json, not Python requirements.txt.
 
-The third demo button runs the real tracing algorithm over an illustrative two-transfer fixture: source sends 2 ETH to an intermediate wallet, which sends 1.8 ETH to Demo Exchange. Expected result: two hops, 90% estimated share, 86/100 heuristic score. It uses `/api/demo/multihop`, requires no Etherscan connection or seeding, and is not a verified on-chain claim. Existing direct demo buttons still use the seeded cache.
+## 6. Architecture
 
-Optional AI summaries use the Groq Chat Completions API. Set `GROQ_API_KEY` and `GROQ_MODEL` to a Groq model available in your account, then restart the backend. Selected candidate data is sent server-side to Groq; the key never goes to the browser. Without configuration or on provider failure, the UI shows a clearly labelled rule-based Trace Summary instead of claiming it is AI-generated. The old LLM_API_KEY / LLM_API_URL placeholders are unused. Documentation: https://console.groq.com/docs/text-chat
+See [architecture and limitations](docs/architecture.md).
 
-POST /api/trace-wallet is an alias of /api/trace and accepts { address }. generateExplanation(traceResult) sends the source address, nodes, edges and candidate scoring evidence to the configured model. Both endpoints return explanation as an AI-generated string, or Summary unavailable on missing configuration, provider failure or a 12-second timeout. The existing summary metadata supplies an honestly labelled rule-based UI fallback.
+Browser → frontend → Express API → Etherscan + local VASP labels → tracing/scoring → optional Groq explanation → result.
 
+## 7. Repository Structure
 
-GROQ_MODEL defaults to openai/gpt-oss-20b when omitted. OPENAI_API_KEY is no longer used. Set GROQ_API_KEY in .env and restart npm run dev.
+- `frontend/`: application interface and frontend dependencies.
+- `backend/src/`: actual backend source and tests (not a nested Git pointer).
+- `docs/`: architecture and technical notes.
+- `assets/screenshots/`: project screenshot guidance and available evidence.
+- `submission/`: presentation and demo-video links.
+- `SUBMISSION_GUIDE.md`: submission checklist.
 
+The NSUT template permits normal project source folders, so frontend/backend paths are retained rather than moved into a redundant src folder.
 
+## 8. Final Presentation
 
-## Restored CryptoTrail frontend adapter
+[Merge Conflictors — Final Presentation](https://docs.google.com/presentation/d/1mHTnKbTJIUkAMRgJX3NKEwvXhhsfTBJ4/edit)
 
-POST http://localhost:3001/api/cryptotrail/trace (alias /v2/trace/deterministic) with {"address":"0x...","chain":"Ethereum"}; for the fixture use {"demo":"multihop","chain":"Ethereum"}. It returns queryAddress, confidenceScore, totalHops, attributionExchange, nodes, explanation and summary. Full evidence is retained in rawTrace. The node list is one connected path to the top candidate, not all branches flattened into a false path. avgLatencyMs is total request duration, not RPC latency. receivingHotWallet is the matched address, not an assertion about wallet role.
+See [presentation details](submission/PRESENTATION.md). Public viewer access must be checked before submission.
 
-Frontend files were left unchanged. NewTraceView still calls buildDetailedTrace and App still generates mock history. These calls must be replaced with asynchronous requests to this endpoint for integration to be complete. Nullable unavailable fields (USD, risk, verification, block/gas/time) require N/A formatting, not numeric toFixed/toLocaleString calls. The original UI also needs to treat confidence as a score and mixer status as unassessed. Keep existing layout and CSS during this data-binding work. No invented telemetry is supplied to satisfy the mock schema.
+## 9. Demo Video
 
-Run backend separately: cd C:\Users\Lenovo\OneDrive\Documents\codex then npm run dev -w backend. Run frontend separately in C:\Users\Lenovo\Downloads\cryptotrail with npm run dev. The frontend does not connect automatically until its mock calls are replaced; backend CORS already permits local frontend requests.
+[Watch the CryptoTrail demonstration](https://www.loom.com/share/262337fe147441acaa05fb56bdc554fd)
+
+See [demo details](submission/DEMO.md).
+
+## 10. Screenshots
+
+See [screenshot index](assets/screenshots/README.md). Add current screenshots of the home page, multi-hop result and AI summary before the final submission.
+
+## 11. Installation
+
+Install Node.js 22 or later and npm. From the repository root:
+
+```sh
+npm install
+```
+
+Copy `.env.example` to `.env`. Set `ETHERSCAN_API_KEY` for live tracing. Set `GROQ_API_KEY` for AI summaries; the default model is `openai/gpt-oss-20b`. Never commit `.env` or share your keys.
+
+Import your curated Ethereum account labels for live VASP matching:
+
+```sh
+npm run import-dataset -- /path/to/accounts.json
+```
+
+A VASP dataset is not bundled. The two-hop illustrative demo is independent of the imported dataset.
+
+## 12. Run and Test
+
+Backend terminal, from the repository root:
+
+```sh
+npm run dev -w backend
+```
+
+Frontend terminal, from the repository root:
+
+```sh
+npm run dev -w frontend
+```
+
+Open the frontend URL printed by Vite (normally port 3000). Backend health: http://localhost:3001/api/health. Keep both terminals running.
+
+```sh
+npm test
+npm run build
+```
+
+To prepare the direct demo cache, run `npm run seed-demo`; those cache entries expire after 15 minutes. Live requests require working external API access. AI failures preserve trace results and use an honestly labelled fallback.
+
+## 13. Team Members and Roles
+
+### Ojas — Backend architecture and integration lead
+
+- Overall backend architecture and integration.
+- API endpoint design: `/api/cryptotrail/trace`, `/api/trace-wallet`, `/api/demo/multihop`.
+- Frontend/backend adapter and null-safety fixes.
+- Final demo coordination and live presentation.
+
+### Ashutosh — Blockchain API and dataset integration
+
+- Etherscan transaction fetching.
+- VASP dataset (`eth-labels`) matching logic.
+- Backend testing with real wallet addresses.
+
+### Shivansh — Tracing, scoring and AI
+
+- Multi-hop path-finding algorithm.
+- Confidence-scoring logic.
+- Groq AI/LLM explanation layer.
+
+### Piyush — Frontend and visual design
+
+- React/TypeScript UI components.
+- Layout, styling and graph visualization.
+
+### Ishika — Frontend testing and demo flow
+
+- UI components and frontend testing.
+- Multi-hop demo flow and interface refinement.
+
+### Ritesh — Presentation and submission
+
+- PPT and pitch deck creation.
+- SIH portal submission and documentation.
+- Demo script and presentation support.
+
+## 14. Future Scope
+
+Support additional chains and token transfers, improve transaction-order-aware tracing and converging-path handling, expand verified VASP labels, and add robust deployment authentication and rate limits.
+
+## Limitations
+
+Ethereum only; four-hop depth limit with wallet/time budgets. Partial results are labelled. Confidence scores are heuristics, not probabilities. The illustrative demo is not verified on-chain activity. USD values, mixer-risk assessment and some transaction metadata are unavailable. Exchange ownership requires independent verification.
+
+Submission structure adapted from [NSUT-SIH-DEMO](https://github.com/NSUT-SIH-26/NSUT-SIH-DEMO). The template's software license has not been applied to this project's code automatically.
+
+## Current uploaded frontend integration status
+The frontend currently in the submitted GitHub repository still calls buildDetailedTrace() from mockData.ts. The connected frontend tested locally is in a different folder and has not been substituted in this documentation update. Replace or merge that data-loading integration before claiming the GitHub checkout runs the live backend from its UI. The documented backend endpoints are available independently.
+

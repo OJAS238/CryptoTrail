@@ -1,9 +1,9 @@
 # Project Screenshots
 
-Add current application screenshots, for example:
+Current application screenshots:
 
-- 01-home.png — original CryptoTrail home page.
-- 02-multihop.png — illustrative two-hop result with its label visible.
-- 03-ai-summary.png — genuine Groq summary and confidence details.
+- 01-https://drive.google.com/file/d/1LDWamPbtP28IxmTCN_8boaynkKHZrSOp/view?usp=drive_link — Original CryptoTrail home page.
+- 02-https://drive.google.com/file/d/1QZGoYJz2WEDYvn7GFHF4DnraucH2DqSv/view?usp=drive_link— Genuine Groq summary and confidence details.
+- 03-https://drive.google.com/file/d/1LDWamPbtP28IxmTCN_8boaynkKHZrSOp/view?usp=drive_link— Forensic audit ledger.
 
-Do not include credentials, terminal secrets or unrelated personal information. Screenshots have not yet been supplied for this submission package.
+

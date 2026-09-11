@@ -45,13 +45,11 @@ Browser → frontend → Express API → Etherscan + local VASP labels → traci
 - `submission/`: presentation and demo-video links.
 - `SUBMISSION_GUIDE.md`: submission checklist.
 
-The NSUT template permits normal project source folders, so frontend/backend paths are retained rather than moved into a redundant src folder.
-
 ## 8. Final Presentation
 
 [Merge Conflictors — Final Presentation](https://docs.google.com/presentation/d/1mHTnKbTJIUkAMRgJX3NKEwvXhhsfTBJ4/edit)
 
-See [presentation details](submission/PRESENTATION.md). Public viewer access must be checked before submission.
+See [presentation details](submission/PRESENTATION.md)
 
 ## 9. Demo Video
 
@@ -61,7 +59,7 @@ See [demo details](submission/DEMO.md).
 
 ## 10. Screenshots
 
-See [screenshot index](assets/screenshots/README.md). Add current screenshots of the home page, multi-hop result and AI summary before the final submission.
+See [screenshot index](assets/screenshots/README.md)
 
 ## 11. Installation
 
